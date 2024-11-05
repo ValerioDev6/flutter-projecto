@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'view_model/project_view_model.dart';
 import 'views/home_view.dart';
 
-void main() async {
+void main()  {
   runApp(const MyApp());
 }
 

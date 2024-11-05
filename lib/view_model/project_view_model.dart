@@ -5,32 +5,33 @@ import '../models/task.dart';
 import '../views/services/notificacion_service.dart';
 
 class ProjectViewModel extends ChangeNotifier {
-  final DatabaseHelper _dbHelper = DatabaseHelper();
+  final DatabaseService _dbService = DatabaseService();
   final NotificationService _notificationService = NotificationService();
 
   List<Project> _projects = [];
   Project? _selectedProject;
   List<Task> _projectTasks = [];
+
   List<Project> get projects => _projects;
   Project? get selectedProject => _selectedProject;
   List<Task> get projectTasks => _projectTasks;
 
   Future<void> loadProjects() async {
-    final db = await _dbHelper.database;
+    final db = await _dbService.database;
     final List<Map<String, dynamic>> maps = await db.query('projects');
     _projects = maps.map((map) => Project.fromMap(map)).toList();
     notifyListeners();
   }
 
   Future<void> addProject(Project project) async {
-    final db = await _dbHelper.database;
+    final db = await _dbService.database;
     project.id = await db.insert('projects', project.toMap());
     _projects.add(project);
     notifyListeners();
   }
 
   Future<void> updateProject(Project project) async {
-    final db = await _dbHelper.database;
+    final db = await _dbService.database;
     await db.update(
       'projects',
       project.toMap(),
@@ -45,7 +46,7 @@ class ProjectViewModel extends ChangeNotifier {
   }
 
   Future<void> deleteProject(int projectId) async {
-    final db = await _dbHelper.database;
+    final db = await _dbService.database;
     await db.delete(
       'projects',
       where: 'id = ?',
@@ -65,9 +66,9 @@ class ProjectViewModel extends ChangeNotifier {
   }
 
   Future<void> loadProjectTasks(int projectId) async {
-    final db = await _dbHelper.database;
+    final db = await _dbService.database;
     final List<Map<String, dynamic>> maps = await db.query(
-      'tasks',
+      'todoList',
       where: 'projectId = ?',
       whereArgs: [projectId],
     );
@@ -76,16 +77,16 @@ class ProjectViewModel extends ChangeNotifier {
   }
 
   Future<void> addTask(Task task) async {
-    final db = await _dbHelper.database;
-    task.id = await db.insert('tasks', task.toMap());
+    final db = await _dbService.database;
+    task.id = await db.insert('todoList', task.toMap());
     _projectTasks.add(task);
     notifyListeners();
   }
 
   Future<void> updateTask(Task task) async {
-    final db = await _dbHelper.database;
+    final db = await _dbService.database;
     await db.update(
-      'tasks',
+      'todoList',
       task.toMap(),
       where: 'id = ?',
       whereArgs: [task.id],
@@ -98,9 +99,9 @@ class ProjectViewModel extends ChangeNotifier {
   }
 
   Future<void> deleteTask(int taskId) async {
-    final db = await _dbHelper.database;
+    final db = await _dbService.database;
     await db.delete(
-      'tasks',
+      'todoList',
       where: 'id = ?',
       whereArgs: [taskId],
     );
